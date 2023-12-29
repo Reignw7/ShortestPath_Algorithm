@@ -1,10 +1,10 @@
-import java.util.ArrayList;
+import java.util.*;
 
 public class Graph {
     public ArrayList<Airport> airports;
 
     public Graph() {
-         this.airports = new java.util.ArrayList<>();
+         this.airports = new ArrayList<>();
     }
 
     // Method to add an airport to the graph.
@@ -34,16 +34,19 @@ public class Graph {
     }
 
     // Dijkstra's algorithm to find the shortest paths from a starting airport.
-    public void dijkstra(String startAirportName) {
+    public void dijkstra(String startAirportName, String endAirportName) {
         Airport startAirport = getAirportByName(startAirportName);
-        if (startAirport == null) {
-            System.out.println("Airport not found: " + startAirportName);
+        Airport endAirport = getAirportByName(endAirportName);
+        if (startAirport == null || endAirport == null) {
+            System.out.println("Airport not found.");
             return;
         }
 
         Map<Airport, Double> distances = new HashMap<>();
+        Map<Airport, LinkedList<Airport>> paths = new HashMap<>();
         for (Airport airport : airports) {
             distances.put(airport, Double.POSITIVE_INFINITY);
+            paths.put(airport, new LinkedList<>());
         }
         distances.put(startAirport, 0.0);
 
@@ -59,28 +62,59 @@ public class Graph {
 
                 if (newDistance < distances.get(neighbor)) {
                     distances.put(neighbor, newDistance);
+                    LinkedList<Airport> newPath = new LinkedList<>(paths.get(currentAirport));
+
+                    // Add the previous airport to the path
+                    newPath.add(currentAirport);
+
+                    paths.put(neighbor, newPath);
+
+                    // Add the destination airport to the path when reached
+                    if (neighbor.equals(endAirport)) {
+                        newPath.add(endAirport);
+                    }
+
                     priorityQueue.add(neighbor);
                 }
             }
         }
 
-        for (Airport airport : airports) {
-            System.out.println("Shortest distance from " + startAirport.name + " to " + airport.name + ": " + distances.get(airport));
+        LinkedList<Airport> shortestPath = paths.get(endAirport);
+        if (shortestPath == null || shortestPath.isEmpty()) {
+            System.out.println("No path found from " + startAirport.name + " to " + endAirport.name);
+            return;
         }
+
+        System.out.print("Shortest path from " + startAirport.name + " to " + endAirport.name + ": ");
+        for (int i = 0; i < shortestPath.size(); i++) {
+            System.out.print(shortestPath.get(i).name);
+            if (i < shortestPath.size() - 1) {
+                System.out.print(" > ");
+            }
+        }
+        System.out.println();
     }
 
     public static void main(String[] args) {
         Graph dijkstraMap = new Graph();
 
-        dijkstraMap.addAirport("CPT");
-        dijkstraMap.addAirport("DUR");
-        dijkstraMap.addAirport("KZN");
+        // Add airports
+        dijkstraMap.addAirport("A");
+        dijkstraMap.addAirport("B");
+        dijkstraMap.addAirport("C");
+        dijkstraMap.addAirport("D");
+        dijkstraMap.addAirport("E");
 
-        dijkstraMap.addNetwork("CPT", "DUR", 2);
-        dijkstraMap.addNetwork("CPT", "KZN", 5);
-        dijkstraMap.addNetwork("DUR", "KZN", 1);
+        // Add networks (connections)
+        dijkstraMap.addNetwork("A", "B", 4);
+        dijkstraMap.addNetwork("A", "C", 2);
+        dijkstraMap.addNetwork("B", "C", 1);
+        dijkstraMap.addNetwork("B", "D", 2);
+        dijkstraMap.addNetwork("C", "D", 3);
+        dijkstraMap.addNetwork("C", "E", 5);
+        dijkstraMap.addNetwork("E", "D", 1);
 
-        dijkstraMap.dijkstra("CPT");
+        dijkstraMap.dijkstra("A", "E");
     }
     
 
