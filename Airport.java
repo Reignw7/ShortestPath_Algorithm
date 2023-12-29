@@ -1,19 +1,15 @@
-import java.util.LinkedList;
+import java.util.List;
 
 public class Airport {
-    public  String name;
-    public LinkedList<network> networks;
-    public  Airport parent;
+    public String name;
+    public List<Network> networks;
 
-    public Airport (String name){
+    public Airport(String name) {
         this.name = name;
-        networks = new LinkedList<network>();
+        this.networks = new java.util.ArrayList<>();
     }
 
-    public LinkedList<network> getNetworks(){
+    public List<Network> getNetworks() {
         return this.networks;
     }
-
 }
-
-
