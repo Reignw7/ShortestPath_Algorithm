@@ -4,6 +4,8 @@ public class Airport {
     public String name;
     public List<Network> networks;
 
+    public Airport previous;
+
     public Airport(String name) {
         this.name = name;
         this.networks = new java.util.ArrayList<>();
